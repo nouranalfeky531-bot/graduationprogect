@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_progect/modules/video/videoveiw.dart';
 import 'modules/onboarding/onboarding_screen.dart';
 
 
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
 
-      home:OnboardingScreen(),
+      home:Videoveiw(),
+      //OnboardingScreen(),
     );
   }
 }
