@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_progect/core/theme/app_colors.dart';
 import 'package:graduation_progect/modules/video/models/Data.dart';
 
 import '../models/AvailableLanguages.dart';
@@ -21,11 +22,20 @@ class CustomDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
+
+
+        hintStyle: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
+        filled: true,
+        fillColor: AppColors.lightColor,
+hoverColor: Colors.red,
+
         hintText: hint,
         // labelText: hint,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        // border: OutlineInputBorder(
+        //
+        //   borderRadius: BorderRadius.circular(25),
+        //   borderSide: BorderSide(color: Colors.yellow)
+        // ),
       ),
       value: value,
       items: items?.map((item) {

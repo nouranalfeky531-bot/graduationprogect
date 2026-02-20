@@ -6,15 +6,23 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:graduation_progect/modules/video/videoveiw.dart';
 import 'package:provider/provider.dart';
 // import "package:flutter_gen/gen_l10n/app_localizations.dart";
 import '../../../core/theme/app_colors.dart';
+import '../../core/resources/ap_constants.dart';
 import '../../core/widgets/custom_btn.dart';
 import '../../core/widgets/custom_btn.dart';
 
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen();
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
 
@@ -92,17 +100,23 @@ class OnboardingScreen extends StatelessWidget {
                     ),
                     AnimatedToggleSwitch<String>.rolling(
                       indicatorIconScale: 1.2,
-                      current: "en",
+                      current:  AppConstants.defult_language,
                       values: const ["en", "ar"],
                       iconList: [
                         Image.asset("assets/images/en.png"),
                         Image.asset("assets/images/ar.png"),
                       ],
+                      onChanged: (value) {
+                        setState(() {
+                          AppConstants.defult_language = value;
+                        });
+                      },
                       style: ToggleStyle(
                         backgroundColor: Colors.transparent,
                         indicatorColor: AppColors.primaryColor,
                         borderColor: AppColors.primaryColor,
                       ),
+
                     ),
                   ],
                 ),
@@ -111,7 +125,9 @@ class OnboardingScreen extends StatelessWidget {
               const Spacer(),
               Center(
                   child: CustomBtn(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Videoveiw(),));
+                },
                 text: "Let’s Start",
                 isLoading: false,
                 isExpanded: true,

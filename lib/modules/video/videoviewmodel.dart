@@ -8,8 +8,7 @@ class videoviewModel{
   static Future<Videoresponse> loadvediodetails() async {
      String filepath="assets/files/SmartObjectSample.json";
     String jsonString = await rootBundle.loadString(filepath);
-    print("==========================================================================================");
-    print(jsonString);
+
     var jsonData = json.decode(jsonString);
     return Videoresponse.fromJson(jsonData);
   }

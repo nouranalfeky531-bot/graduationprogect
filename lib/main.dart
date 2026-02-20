@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_progect/modules/video/videoveiw.dart';
+import 'package:media_kit/media_kit.dart';
 import 'modules/onboarding/onboarding_screen.dart';
 
 
 
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized(); //
   runApp(const MyApp());
 }
 
@@ -21,8 +24,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
 
-      home:Videoveiw(),
-      //OnboardingScreen(),
+      home:
+     // Videoveiw(),
+      OnboardingScreen(),
     );
   }
 }
