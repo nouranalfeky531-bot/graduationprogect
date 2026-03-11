@@ -1,11 +1,9 @@
 
-
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
-
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:graduation_progect/modules/onboarding/prefsmanager.dart';
 import 'package:graduation_progect/modules/video/videoveiw.dart';
 import 'package:provider/provider.dart';
 // import "package:flutter_gen/gen_l10n/app_localizations.dart";
@@ -126,12 +124,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Center(
                   child: CustomBtn(
                 onTap: () {
+                  prefsemanager.setprefs(true);
                   Navigator.push(context, MaterialPageRoute(builder: (context) => Videoveiw(),));
                 },
                 text: "Let’s Start",
                 isLoading: false,
                 isExpanded: true,
               ))
+
             ],
           ),
         ),
