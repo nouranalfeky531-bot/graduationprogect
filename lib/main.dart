@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:graduation_progect/modules/onboarding/onboardindprovider.dart';
 import 'package:graduation_progect/modules/video/videoveiw.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:provider/provider.dart';
+import 'home.dart';
+import 'modules/coursescrean/coursescreen.dart';
 import 'modules/onboarding/onboarding_screen.dart';
 
 
@@ -8,25 +13,34 @@ import 'modules/onboarding/onboarding_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized(); //
-  runApp(const MyApp());
+  MediaKit.ensureInitialized(); //create
+  runApp(ChangeNotifierProvider(create: (context) =>onboardprovider(),
+      child:  MyApp()));
 }
 
 
 
 class MyApp extends StatelessWidget {
-  const MyApp();
+
+  MyApp();
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    var provider = Provider.of<onboardprovider>(context);
+    return ScreenUtilInit(
+        designSize: Size(393, 852),
+    minTextAdapt: true,
+    splitScreenMode: true,
+    builder: (context, child)=> MaterialApp(
+        // bool seen = await PrefsManager.getprefs();
       debugShowCheckedModeBanner: false,
-
-
-      home:
-     // Videoveiw(),
-      OnboardingScreen(),
+       home: CoursesScreen(),
+       //  HomePage()
+    //        provider.isopened?
+    //  Videoveiw():
+    //   OnboardingScreen(),
+    )
     );
   }
 }

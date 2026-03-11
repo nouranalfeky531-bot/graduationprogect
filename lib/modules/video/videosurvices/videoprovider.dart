@@ -3,10 +3,10 @@ import 'package:graduation_progect/core/resources/ap_constants.dart';
 import 'package:graduation_progect/modules/video/models/Data.dart';
 import 'package:graduation_progect/modules/video/videoviewmodel.dart';
 
-import 'models/AudioList.dart';
-import 'models/AvailableLanguages.dart';
-import 'models/Videoresponse.dart';
-import 'models/VttList.dart';
+import '../models/AudioList.dart';
+import '../models/AvailableLanguages.dart';
+import '../models/Videoresponse.dart';
+import '../models/VttList.dart';
 
 class VideoProvider extends ChangeNotifier {
   List<String>? keywords=[];
@@ -22,6 +22,21 @@ class VideoProvider extends ChangeNotifier {
  String? selectedvalue;
   Data? selecteddata;
   String? subtitleurl;
+  String? selectedLanguage = AppConstants.defult_language;
+  List<String> audiolanguageCodes = [];
+
+  void changeLanguage(String value) {
+    selectedLanguage = value;
+
+    for (int i = 0; i < availableLanguages!.length; i++) {
+      if (value == availableLanguages![i].languageCode) {
+        selectedata(i);
+        break;
+      }
+    }
+
+    notifyListeners();
+  }
 String? defultseletedvalue(){
   String? defultseletedvalue;
   for (int i = 0; i < availableLanguages!.length; i++) {
@@ -75,6 +90,8 @@ String? defultelanguage(){
         .toList() ??
         [];
    subtitlelangcode=vttList?.map((e)=> e.langCode.toString()).toList()??[];
+    notifyListeners();
+    audiolanguageCodes=audioList?.map((e)=>e.langCode.toString()).toList()??[];
     notifyListeners();
   }
 
