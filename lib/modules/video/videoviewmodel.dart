@@ -7,6 +7,9 @@ import 'package:graduation_progect/modules/video/models/Videoresponse.dart';
 class videoviewModel {
 
   static const List<String> fileNames = [
+    "assets/files/PDFSample3.json",
+    "assets/files/PDFSample2.json",
+    "assets/files/PDFSample.json",
     "assets/files/SmartObjectSample.json",
     "assets/files/SmartObjectSample-1.json",
 
@@ -38,7 +41,7 @@ class videoviewModel {
       String jsonString = await rootBundle.loadString(filepath);
       var jsonData = json.decode(jsonString);
 
-      if (jsonData['title'] == title) {
+      if (jsonData['title'] == title && jsonData["contentType"]=="video/mp4") {
         return Videoresponse.fromJson(jsonData);
       }
     }

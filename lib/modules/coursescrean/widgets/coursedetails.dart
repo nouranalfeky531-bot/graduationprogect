@@ -7,14 +7,9 @@ import 'courseprogress.dart';
 import 'exercisepage.dart';
 import 'glosarytab.dart';
 import 'lessontile.dart';
-
-
-
 class CourseDetailsScreen extends StatelessWidget {
   final Course course;
-
   const CourseDetailsScreen({ required this.course});
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -70,16 +65,8 @@ class CourseDetailsScreen extends StatelessWidget {
                 ContentPage(),
                 QuestionTab(),
                 Exercise(),
-
-
-
               ]
-
           ),
-
-
         )
-
     );
-
   }}
