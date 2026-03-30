@@ -1,260 +1,188 @@
+
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class Question extends StatelessWidget {
+/// ===============================
+/// Model: Question
+/// ===============================
+/// الاختيارات
+//import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.brown,
-    );
-  }
-}
-
-
-
-
-
-// كلاس النموذج (Model) لتمثيل السؤال الواحد
-class Questionmodel {
+/// ===============================
+/// Model: Question
+/// ===============================
+class Question {
+  final String title;
   final String questionText;
-  final List<String> options;
-  final int correctAnswerIndex; // index الإجابة الصحيحة (يبدأ من 0)
+  final List<Option> options;
 
-  Questionmodel({
+  Question({
+    required this.title,
     required this.questionText,
     required this.options,
-    required this.correctAnswerIndex,
   });
+
+  factory Question.fromJson(Map<String, dynamic> json) {
+    final ioParameters = json['ioParameters'];
+    final answers = ioParameters['Answers  2'] as List;
+
+    return Question(
+      title: json['title'] ?? '',
+      questionText: ioParameters['_Question_'] ?? '',
+      options: answers.map((e) => Option.fromJson(e)).toList(),
+    );
+  }
 }
 
-class QuestionsHomePage extends StatefulWidget {
+/// ===============================
+/// Model: Option
+/// ===============================
+class Option {
+  final String text;
+  final bool isCorrect;
 
+  Option({
+    required this.text,
+    required this.isCorrect,
+  });
+
+  factory Option.fromJson(Map<String, dynamic> json) {
+    return Option(
+      text: json['_OptionText_'] ?? '',
+      isCorrect: json['_Correct_'] ?? false,
+    );
+  }
+}
+
+/// ===============================
+/// TAB Widget
+/// ===============================
+class QuestionTab extends StatefulWidget {
+  const QuestionTab();
 
   @override
-  State<QuestionsHomePage> createState() => _QuestionsHomePageState();
+  State<QuestionTab> createState() => _QuestionTabState();
 }
 
-class _QuestionsHomePageState extends State<QuestionsHomePage> {
-  // قائمة الأسئلة
-  final List<Questionmodel> _questions = [
-    Questionmodel(
-      questionText: 'what is the basic unit of life   ؟',
-      options: [' others', ' the cell', 'call', 'heart'],
-      correctAnswerIndex: 1,
-    ),
-    Questionmodel(
-      questionText: 'Name the organ that pumps blood throughout the human body ',
-      options: ['the skin', 'the heart', 'cell', 'other'],
-      correctAnswerIndex: 1,
-    ),
-    Questionmodel(
-      questionText: ' what is the largest organ in human body    ؟',
-      options: [
-        'DNA  ',
-        ' the skin  ',
-        'cell  ',
-       ' heart  '
-      ],
-      correctAnswerIndex: 1,
-    ),
-    Questionmodel(
-      questionText: '    what is the process by which plants make their food ؟',
-      options: [
-        ' heart',
-        'cell ',
-        ' photosynthesis',
-        '  DNA'
-      ],
-      correctAnswerIndex: 2,
-    ),
-    // يمكنك إضافة المزيد من الأسئلة هنا...
-  ];
+class _QuestionTabState extends State<QuestionTab> {
+  Question? question;
+  int? selectedIndex;
+  bool answered = false;
 
-  int _currentQuestionIndex = 0;
-  String? _feedbackMessage; // رسالة التغذية الراجعة (صح/غلط)
-  bool _isAnswered = false; // هل تمت الإجابة على السؤال الحالي؟
+  @override
+  void initState() {
+    super.initState();
+    loadQuestion();
+  }
 
-  // دالة للتحقق من الإجابة
-  void _checkAnswer(int selectedIndex) {
-    // إذا كان قد تمت الإجابة مسبقاً، لا تفعل شيئاً
-    if (_isAnswered) return;
+  Future<void> loadQuestion() async {
+    final String jsonString =
+    await rootBundle.loadString('assets/files/QuestionSample.json');
+
+    final Map<String, dynamic> jsonData = json.decode(jsonString);
 
     setState(() {
-      _isAnswered = true;
-      if (selectedIndex ==
-          _questions[_currentQuestionIndex].correctAnswerIndex) {
-        _feedbackMessage = '✅ true!';
-      } else {
-        _feedbackMessage =
-        '❌ false!correct  is: ${_questions[_currentQuestionIndex]
-            .options[_questions[_currentQuestionIndex].correctAnswerIndex]}';
-      }
+      question = Question.fromJson(jsonData);
     });
   }
 
-  // دالة للانتقال إلى السؤال التالي
-  void _nextQuestion() {
-    setState(() {
-      // التأكد من أننا لم نصل إلى نهاية الأسئلة
-      if (_currentQuestionIndex < _questions.length - 1) {
-        _currentQuestionIndex++;
-        _feedbackMessage = null;
-        _isAnswered = false;
-      } else {
-        // إذا انتهت الأسئلة، يمكن عرض رسالة أو إعادة تعيين
-        _showDialog();
-      }
-    });
-  }
+  void checkAnswer() {
+    if (selectedIndex == null) return;
 
-  // دالة لعرض حوار عند الانتهاء
-  void _showDialog() {
+    setState(() {
+      answered = true;
+    });
+
+    bool isCorrect = question!.options[selectedIndex!].isCorrect;
+
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("good"),
-          content: const Text('You  answered  all question'),
-          actions: [
-            TextButton(
-              child: Text(" again"),
-              onPressed: () {
-                setState(() {
-                  _currentQuestionIndex = 0;
-                  _feedbackMessage = null;
-                  _isAnswered = false;
-                });
-                Navigator.of(context).pop();
-              },
+      builder: (_) =>
+          AlertDialog(
+            title: Text(isCorrect ? "Correct ✅" : "Wrong ❌"),
+            content: Text(
+              isCorrect
+                  ? "إجابتك صحيحة 🎉"
+                  : "إجابتك خاطئة\n\nالإجابة الصحيحة هي: ${question!
+                  .options
+                  .firstWhere((o) => o.isCorrect)
+                  .text}",
+              textAlign: TextAlign.center,
             ),
-          ],
-        );
-      },
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("OK"),
+              )
+            ],
+          ),
     );
+  }
+
+  Color getOptionColor(int index) {
+    if (!answered) return Colors.white;
+
+    final option = question!.options[index];
+
+    if (option.isCorrect) {
+      return Colors.green.shade100;
+    } else if (selectedIndex == index && !option.isCorrect) {
+      return Colors.red.shade100;
+    } else {
+      return Colors.white;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // الحصول على السؤال الحالي
-    Questionmodel currentQuestion = _questions[_currentQuestionIndex];
+    if (question == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('📝  test'),
-          centerTitle: true,
-          foregroundColor: Colors.white,
-        ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+    return Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // عرض رقم السؤال
-            Text(
-              'question ${_currentQuestionIndex + 1} to ${_questions.length}',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
 
-            // عرض نص السؤال
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.blue.shade200),
-              ),
-              child: Text(
-                currentQuestion.questionText,
+              /// عنوان السؤال
+              Text(
+                question!.title,
                 style: const TextStyle(
                   fontSize: 22,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 30),
 
-            // عرض خيارات الإجابة
-            ...List.generate(currentQuestion.options.length, (index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: ElevatedButton(
-                  onPressed: () => _checkAnswer(index),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    currentQuestion.options[index],
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ),
-              );
-            }),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
-
-            // عرض رسالة التغذية الراجعة (صح/غلط)
-            if (_feedbackMessage != null)
+              /// السؤال
               Container(
-                padding: const EdgeInsets.all(15),
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: _feedbackMessage!.contains('✅')
-                      ? Colors.green.shade100
-                      : Colors.red.shade100,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: _feedbackMessage!.contains('✅')
-                        ? Colors.green
-                        : Colors.red,
-                  ),
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
-                  _feedbackMessage!,
-                  style: TextStyle(
+                  question!.questionText,
+                  style: const TextStyle(
                     fontSize: 18,
-                    color: _feedbackMessage!.contains('✅')
-                        ? Colors.green.shade900
-                        : Colors.red.shade900,
+                    fontWeight: FontWeight.w600,
                   ),
-                  textAlign: TextAlign.center,
+                  textDirection: TextDirection.rtl,
                 ),
               ),
 
-            const Spacer(),
+              const SizedBox(height: 25),
 
-            // زر الانتقال للسؤال التالي (يظهر فقط بعد الإجابة)
-            if (_isAnswered)
-              ElevatedButton(
-                onPressed: _nextQuestion,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  _currentQuestionIndex < _questions.length - 1
-                      ? ' next question ⬅️'
-                      : ' finish 🏁',
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
-          ],
-        ),
-      ),
+            ]
+        )
     );
   }
 }
-

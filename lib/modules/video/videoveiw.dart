@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_progect/core/resources/ap_constants.dart';
-import 'package:graduation_progect/core/theme/app_colors.dart';
-import 'package:graduation_progect/modules/video/videosurvices/videoprovider.dart';
 import 'package:graduation_progect/modules/video/videosurvices/playerprovider.dart';
-import 'package:graduation_progect/modules/video/videoviewmodel.dart';
+import 'package:graduation_progect/modules/video/videosurvices/videoprovider.dart';
+import 'package:graduation_progect/modules/video/widgets/dropdown.dart';
 import 'package:graduation_progect/modules/video/widgets/iconbotton.dart';
 import 'package:provider/provider.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'widgets/dropdown.dart';
+
+import '../../core/theme/app_colors.dart';
 
 class Videoveiw extends StatefulWidget {
   const Videoveiw();
@@ -18,26 +17,38 @@ class Videoveiw extends StatefulWidget {
 }
 
 class _VideoveiwState extends State<Videoveiw> {
-  Offset? tapPosition;
-  VideoProvider videoProvider = VideoProvider();
-  VideoPlayerProvider playerProvider = VideoPlayerProvider();
 
-  String selected = "transcript";
-  String selectedlanguage = AppConstants.defult_language;
-  String? selectedsubtitle = AppConstants.defult_language;
-  String? selectedaudio;
-  List<AudioTrack> audioTracks = [];
+  late VideoPlayerProvider playerProvider;
+
+  String selectedFormat = "transcript";
+  String? selectedSubtitle;
+  String? selectedAudio;
+
+  Offset? tapPosition;
+
   @override
   void initState() {
     super.initState();
-    fetchData();
-    print(videoProvider.url);
+
+    playerProvider = VideoPlayerProvider();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadVideo();
+    });
   }
 
-  void fetchData() async {
+  Future<void> loadVideo() async {
+
+    final videoProvider = context.read<VideoProvider>();
+
     await videoProvider.fetchvideodata();
-    await videoviewModel.loadvediodetails();
-    playerProvider.initialize(videoProvider.url!);
+
+    if (videoProvider.url != null) {
+      playerProvider.initialize(videoProvider.url!);
+    }
+
+    videoProvider.isLoading = false;
+    videoProvider.notifyListeners();
   }
 
   @override
@@ -48,100 +59,103 @@ class _VideoveiwState extends State<Videoveiw> {
 
   @override
   Widget build(BuildContext context) {
-    print(AppConstants.defult_language);
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: videoProvider),
-        ChangeNotifierProvider.value(value: playerProvider),
-      ],
-      child: Consumer<VideoProvider>(builder: (context, videoProvider, child) {
-        if (videoProvider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return Scaffold(
-          backgroundColor: AppColors.lightColor,
-          appBar: AppBar(),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Consumer<VideoPlayerProvider>(
-                    builder: (context, playerProvider, child) {
+
+    final videoProvider = context.watch<VideoProvider>();
+
+    if (videoProvider.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return ChangeNotifierProvider(
+      create: (_) => playerProvider,
+      child: Scaffold(
+
+        appBar: AppBar(),
+
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+
+              Consumer<VideoPlayerProvider>(
+                builder: (context, playerProvider, child) {
+
+                  if (playerProvider.controller == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
                   return AspectRatio(
-                    aspectRatio: 16 / 10,
+                    aspectRatio: 16 / 9,
                     child: Stack(
                       alignment: Alignment.topCenter,
                       children: [
-                        Video(controller: playerProvider.controller),
-                        Row(children: [
-                          VideoControlButton(
-                            icon: playerProvider.isMuted
-                                ? Icons.volume_off
-                                : Icons.volume_up,
-                            onPressed: playerProvider.toggleMute,
-                          ),
 
-                          VideoControlButton(
-                            icon: Icons.replay_10,
-                            onPressed: playerProvider.seekBackward,
-                          ),
+                        Video(
+                          controller: playerProvider.controller!,
+                        ),
 
-                          VideoControlButton(
-                            icon: Icons.forward_10,
-                            onPressed: playerProvider.seekForward,
-                          ),
+                        Row(
+                          children: [
 
-                          const Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(
-                              onTapDown: (TapDownDetails details) {
+                            VideoControlButton(
+                              icon: playerProvider.isMuted
+                                  ? Icons.volume_off
+                                  : Icons.volume_up,
+                              onPressed: playerProvider.toggleMute,
+                            ),
+
+                            VideoControlButton(
+                              icon: Icons.replay_10,
+                              onPressed: playerProvider.seekBackward,
+                            ),
+
+                            VideoControlButton(
+                              icon: Icons.forward_10,
+                              onPressed: playerProvider.seekForward,
+                            ),
+
+                            const Spacer(),
+
+                            /// AUDIO TRACK
+                            GestureDetector(
+                              onTapDown: (details) {
                                 tapPosition = details.globalPosition;
                               },
-                              child: Icon(
-                                Icons.headphones,
-                                color: AppColors.lightColor,
-                              ),
+                              child: const Icon(Icons.headphones),
                               onTap: () async {
+
                                 final overlay = Overlay.of(context)
                                     .context
                                     .findRenderObject() as RenderBox;
 
                                 final result = await showMenu<String>(
-                                  color: AppColors.lightColor,
                                   context: context,
                                   position: RelativeRect.fromRect(
-                                    Rect.fromPoints(
-                                      tapPosition!,
-                                      tapPosition!,
-                                    ),
+                                    Rect.fromPoints(tapPosition!, tapPosition!),
                                     Offset.zero & overlay.size,
                                   ),
                                   items: videoProvider.audiolanguageCodes!
-                                      .map(
-                                        (e) => PopupMenuItem<String>(
-                                          value: e,
-                                          child: Text(e),
-                                        ),
-                                      )
+                                      .map((e) => PopupMenuItem<String>(
+                                    value: e,
+                                    child: Text(e),
+                                  ))
                                       .toList(),
                                 );
 
                                 if (result != null) {
+
                                   setState(() {
-                                    selectedaudio = result;
+                                    selectedAudio = result;
                                   });
 
-                                  for (int i = 0;
-                                      i < videoProvider.audioList!.length;
-                                      i++) {
-                                    if (selectedaudio ==
-                                        videoProvider.audioList![i].langCode) {
+                                  for (var audio in videoProvider.audioList!) {
+
+                                    if (audio.langCode == result) {
+
                                       await playerProvider.player.setAudioTrack(
-                                        AudioTrack.uri(
-                                            videoProvider.audioList![i].url!),
+                                        AudioTrack.uri(audio.url!),
                                       );
-                                      await playerProvider.player
-                                          .seek(playerProvider.position);
 
                                       break;
                                     }
@@ -149,76 +163,122 @@ class _VideoveiwState extends State<Videoveiw> {
                                 }
                               },
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(
 
-                              onTapDown: (TapDownDetails details) {
+                            const SizedBox(width: 10),
+
+                            /// SUBTITLE TRACK
+                            GestureDetector(
+                              onTapDown: (details) {
                                 tapPosition = details.globalPosition;
                               },
-                              child: Icon(
-                                Icons.subtitles,
-                                color: AppColors.lightColor,
-                                size: 25,
-                              ),
-                              // onDoubleTap: () {
-                              //   for (var vtt in videoProvider.vttList!) {
-                              //     if (AppConstants.defult_language ==
-                              //         vtt.langCode) {
-                              //       playerProvider.player.setSubtitleTrack(
-                              //         SubtitleTrack.uri(vtt.url!),
-                              //       );
-                              //       break;
-                              //     }
-                              //   }
-                              // },
+                              child: const Icon(Icons.subtitles),
                               onTap: () async {
+
                                 final overlay = Overlay.of(context)
                                     .context
                                     .findRenderObject() as RenderBox;
 
                                 final result = await showMenu<String>(
-                                  color: AppColors.lightColor,
                                   context: context,
                                   position: RelativeRect.fromRect(
-                                    Rect.fromPoints(
-                                      tapPosition!,
-                                      tapPosition!,
-                                    ),
+                                    Rect.fromPoints(tapPosition!, tapPosition!),
                                     Offset.zero & overlay.size,
                                   ),
                                   items: videoProvider.subtitlelangcode!
-                                      .map(
-                                        (e) => PopupMenuItem<String>(
-                                          value: e,
-                                          child: Text(e),
-                                        ),
-                                      )
+                                      .map((e) => PopupMenuItem<String>(
+                                    value: e,
+                                    child: Text(e),
+                                  ))
                                       .toList(),
                                 );
 
                                 if (result != null) {
+
                                   setState(() {
-                                    selectedsubtitle = result;
+                                    selectedSubtitle = result;
                                   });
 
-                                  for (var vtt in videoProvider.vttList!) {
-                                    if (result == vtt.langCode) {
+                                  for (var sub in videoProvider.vttList!) {
+
+                                    if (sub.langCode == result) {
+
                                       playerProvider.player.setSubtitleTrack(
-                                        SubtitleTrack.uri(vtt.url!),
+                                        SubtitleTrack.uri(sub.url!),
                                       );
+
                                       break;
                                     }
                                   }
                                 }
                               },
                             ),
-                          ),
-                          IconButton(
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              /// DROPDOWNS
+              Row(
+                children: [
+
+                  Expanded(
+                    child: CustomDropdown(
+                      hint: 'Data Language',
+                      value: videoProvider.selectedLanguage,
+                      items: videoProvider.languageCodes,
+                      onChanged: (value) {
+                        if (value != null) {
+                          videoProvider.changeLanguage(value);
+                        }
+                      },
+                    ),
+                  ),
+
+                  Expanded(
+                    child: CustomDropdown(
+                      hint: 'Data Format',
+                      value: selectedFormat,
+                      items: const [
+                        "summary25",
+                        "summary50",
+                        "transcript"
+                      ],
+                      onChanged: (value) {
+
+                        if (value == null) return;
+
+                        videoProvider.selected(value);
+
+                        setState(() {
+                          selectedFormat = value;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+
+              /// TEXT DATA
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  videoProvider.selectedvalue ??
+                      videoProvider.defultseletedvalue() ??
+                      "",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              IconButton(
                               icon: Icon(
-                                Icons.key,
-                                color: AppColors.lightColor,
+                                Icons.keyboard_alt_rounded,
+                                color: Colors.black,
                                 size: 25,
                               ),
                               onPressed: () => showDialog(
@@ -226,13 +286,12 @@ class _VideoveiwState extends State<Videoveiw> {
                                   builder: (BuildContext context) {
                                     return Expanded(
                                       child: Dialog(
-                                        backgroundColor: AppColors.lightColor,
+                                        backgroundColor: AppColors.primaryColor,
                                         child: SingleChildScrollView(
+                                          scrollDirection: Axis.vertical,
                                           child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.end,
+                                                CrossAxisAlignment.start,
                                             children: videoProvider.keywords!
                                                 .map(
                                                   (e) => Padding(
@@ -258,74 +317,50 @@ class _VideoveiwState extends State<Videoveiw> {
                                                 .toList(),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  })),
-                        ]),
-                      ],
-                    ),
-                  );
-                }),
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        // SizedBox(width: 39,),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CustomDropdown(
-                              hint: 'data language',
-                              value: videoProvider.selectedLanguage,
-                              items: videoProvider.languageCodes,
-                              onChanged: (value) {
-                                if (value != null) {
-                                  videoProvider.changeLanguage(value);
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CustomDropdown(
-                              hint: 'data format',
-                              value: selected,
-                              items: const [
-                                "summary25",
-                                "summary50",
-                                "transcript"
-                              ],
-                              onChanged: (value) {
-                                videoProvider.selected(value!);
-                                setState(() {
-                                  selected = value!;
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(13.0),
-                      child: Text(
-                          videoProvider.selectedvalue ??
-                              videoProvider.defultseletedvalue()!,
-                          style: TextStyle(
-                              color: AppColors.darkColor,
-                              fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                                      ),);
+                                  }
+
+                                        ),),
+
+              /// KEYWORDS
+              /// KEYWORDS
+              // if (videoProvider.keywords != null && videoProvider.keywords!.isNotEmpty)
+              //   Padding(
+              //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              //     child: Row(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //
+              //         const Icon(
+              //           Icons.key,
+              //           size: 20,
+              //         ),
+              //
+              //         const SizedBox(width: 8),
+              //
+              //         Expanded(
+              //           child: Wrap(
+              //             spacing: 8,
+              //             runSpacing: 6,
+              //             children: videoProvider.keywords!
+              //                 .map(
+              //                   (k) => Text(
+              //                 "#$k",
+              //                 style: const TextStyle(
+              //                   fontWeight: FontWeight.w500,
+              //                 ),
+              //               ),
+              //             )
+              //                 .toList(),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+            ],
           ),
-        );
-      }),
+        ),
+      ),
     );
   }
 }

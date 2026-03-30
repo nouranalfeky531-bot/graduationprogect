@@ -6,7 +6,10 @@ import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'home.dart';
 import 'modules/coursescrean/coursescreen.dart';
+
+import 'modules/lesson/lessonpage.dart';
 import 'modules/onboarding/onboarding_screen.dart';
+import 'modules/video/videosurvices/titleprovider.dart';
 
 
 
@@ -14,8 +17,12 @@ import 'modules/onboarding/onboarding_screen.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized(); //create
-  runApp(ChangeNotifierProvider(create: (context) =>onboardprovider(),
-      child:  MyApp()));
+  runApp(
+      ChangeNotifierProvider(create: (context) =>onboardprovider(),
+      // ChangeNotifierProvider(create: (context) =>selectedtitle()
+
+  child:  MyApp()),
+  );
 }
 
 
@@ -35,7 +42,12 @@ class MyApp extends StatelessWidget {
     builder: (context, child)=> MaterialApp(
         // bool seen = await PrefsManager.getprefs();
       debugShowCheckedModeBanner: false,
-       home: CoursesScreen(),
+       home:
+       // Videoveiw(),
+
+       // TitleDropdown(),
+
+      CoursesScreen(),
        //  HomePage()
     //        provider.isopened?
     //  Videoveiw():
