@@ -4,6 +4,7 @@ import 'package:graduation_progect/modules/coursescrean/widgets/questionScreen.d
 import 'content.dart';
 import 'course.dart';
 import 'courseprogress.dart';
+import 'exercisepage.dart';
 import 'glosarytab.dart';
 import 'lessontile.dart';
 
@@ -26,10 +27,11 @@ class CourseDetailsScreen extends StatelessWidget {
               indicatorColor: Colors.black,
               unselectedLabelColor: Colors.black,
               tabs: [
-                Tab(text: "Video",),
+                // Tab(text: "Video",),
                 Tab(text: "Glossary"),
                 Tab(text:"content"),
-                Tab(text:"question")
+                Tab(text:"exercise"),
+                Tab(text: "Exercise",)
               ],
             ),
           ),
@@ -66,7 +68,8 @@ class CourseDetailsScreen extends StatelessWidget {
                 GlossaryTab(glossary: course.glossary),
                // PdfScreen(),
                 ContentPage(),
-                QuestionsHomePage()
+                QuestionTab(),
+                Exercise(),
 
 
 

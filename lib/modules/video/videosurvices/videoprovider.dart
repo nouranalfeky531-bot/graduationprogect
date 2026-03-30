@@ -1,8 +1,13 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_progect/core/resources/ap_constants.dart';
 import 'package:graduation_progect/modules/video/models/Data.dart';
+import 'package:graduation_progect/modules/video/videosurvices/titleprovider.dart';
+import 'package:graduation_progect/modules/video/videoveiw.dart';
 import 'package:graduation_progect/modules/video/videoviewmodel.dart';
+import 'package:provider/provider.dart';
 
+import '../../lesson/lessonpage.dart';
 import '../models/AudioList.dart';
 import '../models/AvailableLanguages.dart';
 import '../models/Videoresponse.dart';
@@ -13,6 +18,7 @@ class VideoProvider extends ChangeNotifier {
   List<AudioList>? audioList=[];
   List<VttList>? vttList=[];
   String? url;
+
   List<AvailableLanguages>?availableLanguages =[];
   // List<Data>? data;
   List<String> languageCodes = [];
@@ -24,6 +30,13 @@ class VideoProvider extends ChangeNotifier {
   String? subtitleurl;
   String? selectedLanguage = AppConstants.defult_language;
   List<String> audiolanguageCodes = [];
+  String? selectedTitle;
+
+  void setSelectedTitle(String title) {
+    selectedTitle = title;
+    notifyListeners();
+  }
+
 
   void changeLanguage(String value) {
     selectedLanguage = value;
@@ -69,12 +82,11 @@ String? defultelanguage(){
   String defultlanguage=AppConstants.defult_language;
   notifyListeners();
   return defultlanguage;
-
 }
  Future<void>fetchvideodata()async {
     isLoading = true;
     notifyListeners();
-    Videoresponse videoresponse = await videoviewModel.loadvediodetails();
+   Videoresponse videoresponse = await videoviewModel.loadvediodetails(selectedTitle!);
     isLoading = false;
     notifyListeners();
     url=videoresponse.url?? 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';

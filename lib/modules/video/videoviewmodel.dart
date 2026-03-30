@@ -1,15 +1,57 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter/services.dart';
 import 'package:graduation_progect/modules/video/models/Videoresponse.dart';
 
-class videoviewModel{
+class videoviewModel {
 
-  static Future<Videoresponse> loadvediodetails() async {
-     String filepath="assets/files/SmartObjectSample.json";
-    String jsonString = await rootBundle.loadString(filepath);
+  static const List<String> fileNames = [
+    "assets/files/SmartObjectSample.json",
+    "assets/files/SmartObjectSample-1.json",
 
-    var jsonData = json.decode(jsonString);
-    return Videoresponse.fromJson(jsonData);
+  ];
+
+  static Future<List<String>> getAllTitles() async {
+    List<String> titles = [];
+
+    for (final path in fileNames) {
+      try {
+        final String raw = await rootBundle.loadString(path);
+        final Map<String, dynamic> json = jsonDecode(raw);
+        if (json.containsKey('title')) {
+          titles.add(json['title']);
+        }
+      } catch (e) {
+        print('Error: $e');
+      }
+    }
+
+    return titles;
   }
+
+
+
+  static Future<Videoresponse> loadvediodetails(String title) async {
+    for (final filepath in fileNames) {
+
+      String jsonString = await rootBundle.loadString(filepath);
+      var jsonData = json.decode(jsonString);
+
+      if (jsonData['title'] == title) {
+        return Videoresponse.fromJson(jsonData);
+      }
+    }
+
+    throw Exception("Video not found");
+  }
+
+
+
+  // static Future<Videoresponse> loadvediodetails() async {
+  //    String filepath="assets/files/SmartObjectSample.json";
+  //   String jsonString = await rootBundle.loadString(filepath);
+  //   var jsonData = json.decode(jsonString);
+  //   return Videoresponse.fromJson(jsonData);
+  // }
 }
