@@ -22,7 +22,8 @@ class CoursePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Lessons")),
-      body: ListView.builder(
+      body:
+      ListView.builder(
         itemCount: lessons.length,
         itemBuilder: (context, index) {
           final lesson = lessons[index];

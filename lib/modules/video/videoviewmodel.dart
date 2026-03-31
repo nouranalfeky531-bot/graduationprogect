@@ -47,14 +47,13 @@ class videoviewModel {
     }
 
     throw Exception("Video not found");
-  }
+  }}
 
 
 
-  // static Future<Videoresponse> loadvediodetails() async {
-  //    String filepath="assets/files/SmartObjectSample.json";
-  //   String jsonString = await rootBundle.loadString(filepath);
-  //   var jsonData = json.decode(jsonString);
-  //   return Videoresponse.fromJson(jsonData);
-  // }
-}
+// static Future<Videoresponse> loadvediodetails() async {
+//    String filepath="assets/files/SmartObjectSample.json";
+//   String jsonString = await rootBundle.loadString(filepath);
+//   var jsonData = json.decode(jsonString);
+//   return Videoresponse.fromJson(jsonData);
+// }

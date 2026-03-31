@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import '../video/videoviewmodel.dart';
 import 'models/Pdfresponse.dart';
 
 class PdfViewModel {
-  static const List<String> fileNames = [
-    'assets/files/PDFSample.json',
-    'assets/files/PDFSample2.json',
-    'assets/files/PDFSample3.json',
-  ];
+  static const List<String> fileNames =  videoviewModel.fileNames;
+  //   'assets/files/PDFSample.json',
+  //   'assets/files/PDFSample2.json',
+  //   'assets/files/PDFSample3.json',
+  // ];
 
   static Future<List<String>> getAllTitles() async {
     List<String> titles = [];
@@ -30,7 +31,7 @@ class PdfViewModel {
       try {
         String jsonString = await rootBundle.loadString(filepath);
         var jsonData = json.decode(jsonString);
-        if (jsonData['title'] == title) {
+        if (jsonData['title'] == title && jsonData["contentType"]== "application/pdf") {
           return Pdfresponse.fromJson(jsonData);
         }
       } catch (e) {
