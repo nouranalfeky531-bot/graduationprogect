@@ -83,29 +83,59 @@ String? defultelanguage(){
   notifyListeners();
   return defultlanguage;
 }
- Future<void>fetchvideodata()async {
+  Future<void> fetchvideodata() async {
     isLoading = true;
     notifyListeners();
-   Videoresponse videoresponse = await videoviewModel.loadvediodetails(selectedTitle!);
-    isLoading = false;
-    notifyListeners();
-    url=videoresponse.url?? 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
-    notifyListeners();
-    keywords=videoresponse.keywords??[];
-    audioList=videoresponse.audioList??[];
-    vttList=videoresponse.vttList??[];
-    availableLanguages=videoresponse.availableLanguages??[];
-    // data=Data();
-    notifyListeners();
+
+    Videoresponse videoresponse =
+    await videoviewModel.loadvediodetails(selectedTitle!);
+
+    url = videoresponse.url ??
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
+
+    keywords = videoresponse.keywords ?? [];
+    audioList = videoresponse.audioList ?? [];
+    vttList = videoresponse.vttList ?? [];
+    availableLanguages = videoresponse.availableLanguages ?? [];
+
     languageCodes = availableLanguages
         ?.map((e) => e.languageCode.toString())
         .toList() ??
         [];
-   subtitlelangcode=vttList?.map((e)=> e.langCode.toString()).toList()??[];
-    notifyListeners();
-    audiolanguageCodes=audioList?.map((e)=>e.langCode.toString()).toList()??[];
-    notifyListeners();
+
+    subtitlelangcode =
+        vttList?.map((e) => e.langCode.toString()).toList() ?? [];
+
+    audiolanguageCodes =
+        audioList?.map((e) => e.langCode.toString()).toList() ?? [];
+
+    isLoading = false;
+
+    notifyListeners(); // مرة واحدة فقط
   }
+ // Future<void>fetchvideodata()async {
+ //    isLoading = true;
+ //    notifyListeners();
+ //   Videoresponse videoresponse = await videoviewModel.loadvediodetails(selectedTitle!);
+ //    isLoading = false;
+ //    notifyListeners();
+ //    url=videoresponse.url?? 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4';
+ //    notifyListeners();
+ //    keywords=videoresponse.keywords??[];
+ //    audioList=videoresponse.audioList??[];
+ //    vttList=videoresponse.vttList??[];
+ //    availableLanguages=videoresponse.availableLanguages??[];
+ //    // data=Data();
+ //    notifyListeners();
+ //    languageCodes = availableLanguages
+ //        ?.map((e) => e.languageCode.toString())
+ //        .toList() ??
+ //        [];
+ //   subtitlelangcode=vttList?.map((e)=> e.langCode.toString()).toList()??[];
+ //    notifyListeners();
+ //    audiolanguageCodes=audioList?.map((e)=>e.langCode.toString()).toList()??[];
+ //    notifyListeners();
+ //  }
 
 
 }

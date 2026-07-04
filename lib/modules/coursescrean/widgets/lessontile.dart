@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_progect/core/theme/app_colors.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,7 +22,7 @@ class _LessonTileState extends State<LessonTile> {
     return ListTile(
       leading: Icon(
         widget.lesson.isCompleted ? Icons.check_circle : Icons.play_circle,
-        color: widget.lesson.isCompleted ? Colors.green : Colors.blue,
+        color: widget.lesson.isCompleted ? Colors.green : AppColors.secondaryColor,
       ),
       title: Text(widget.lesson.title),
       subtitle: Text(widget.lesson.duration),

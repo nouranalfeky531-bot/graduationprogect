@@ -19,7 +19,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^2.13.0
+  sdk: ">=3.10.0 <4.0.0"
+
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -48,6 +49,11 @@ dependencies:
   http: ^1.2.0
   dartz: ^0.10.1
   just_audio: ^0.9.36
+  url_launcher: ^6.3.2
+  webview_flutter:
+#  exercise:
+#    git:
+#       url: https://github.com/aliaa01021401644-sys/Exercise_Package.git
 
   #  flutter_localizations:
 #    sdk: flutter
@@ -62,7 +68,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -86,6 +91,7 @@ flutter:
     - assets/images/
     - assets/files/
     - assets/LessonSample.json
+    - assets/files/QuestionSample.json
     - assets/files/QuestionSample.json
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

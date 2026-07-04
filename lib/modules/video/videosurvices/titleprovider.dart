@@ -1,20 +1,21 @@
-
-
-import 'package:flutter/material.dart';
-
-class selectedtitle extends ChangeNotifier {
- String? selectedTitle;
-  void setSelectedTitle(String title) {
-    selectedTitle = title;
-    notifyListeners();
-  }
-
-}
+//
+//
 // import 'package:flutter/material.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:google_fonts/google_fonts.dart';
-// import 'package:graduation_progect/core/theme/app_colors.dart';
-// import 'package:graduation_progect/modules/video/videoveiw.dart';
+//
+// import '../../../core/theme/app_colors.dart';
+// import '../videoveiw.dart';
+//
+// class selectedtitle extends ChangeNotifier {
+//  String? selectedTitle;
+//   void setSelectedTitle(String title) {
+//     selectedTitle = title;
+//     notifyListeners();
+//   }
+//
+// }
+//
 //
 // class HomeDrawer extends StatelessWidget {
 //   const HomeDrawer();

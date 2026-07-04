@@ -1,0 +1,19 @@
+{
+    "questions": [
+        {
+            "title":"Chemistry",
+            "question": "Example for Chemistry ",
+            "url": "https://scube-applications-media54cbabfc-u3d19945rbtv.s3.eu-west-1.amazonaws.com/new-interactive-objects/objects/%D8%A7%D9%84%D8%B9%D8%AF%D8%AF-%D8%A7%D9%84%D8%B0%D8%B1%D9%8A-675c24110d13c2000311fee5.html"
+        },
+        {
+            "title": "physics",
+            "question": "Example for physics",
+            "url":"https://scube-applications-media54cbabfc-u3d19945rbtv.s3.eu-west-1.amazonaws.com/new-interactive-objects/objects/%D8%A7%D9%84%D8%B9%D8%AF%D8%AF-%D8%A7%D9%84%D8%B0%D8%B1%D9%8A-675c24110d13c2000311fee5.html"
+        },
+        {
+            "title":"Biology",
+            "question": "Example for Biology",
+            "url": "https://scube-applications-media54cbabfc-u3d19945rbtv.s3.eu-west-1.amazonaws.com/new-interactive-objects/objects/%D8%A7%D9%84%D8%B9%D8%AF%D8%AF-%D8%A7%D9%84%D8%B0%D8%B1%D9%8A-675c24110d13c2000311fee5.html"
+        }
+    ]
+}

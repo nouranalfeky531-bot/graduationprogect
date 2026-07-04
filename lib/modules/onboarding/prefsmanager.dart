@@ -1,28 +1,14 @@
-
 import 'package:shared_preferences/shared_preferences.dart';
 
-class prefsemanager {
+class PrefsManager {
 
-  static Future<void> setprefs(state) async {
+  static Future<void> setPrefs(bool state) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // bool whatstate=  prefs.getBool("intro_seen")??false;
-    //  if(whatstate==true){
-    //   whatstate=state;
-    //  }
-    prefs.setBool("intro_seen", state);
-
-    print("======================================");
-    // bool whatstate=  prefs.getBool("intro_seen")??false;
-    print(state);
-    print("======================================");
+    await prefs.setBool("intro_seen", state);
   }
 
-static  Future<bool> getprefs() async {
+  static Future<bool> getPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool seen = prefs.getBool("intro_seen") ?? false;
-    print("=======================================");
-    print(seen);
-    print("============================================================");
-    return seen = prefs.getBool("intro_seen") ?? false;
+    return prefs.getBool("intro_seen") ?? false;
   }
 }

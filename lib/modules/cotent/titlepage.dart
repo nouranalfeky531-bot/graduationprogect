@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_progect/core/theme/app_colors.dart';
 import 'package:graduation_progect/modules/video/videosurvices/videoprovider.dart';
 import 'package:provider/provider.dart';
 
+import '../exercise/exercise/file/viewmodels/questioonViewModel2.dart';
+import '../exercise/exercise/file/views/ExerciseTab2.dart';
 import '../pdf/models/Pdfresponse.dart';
+import '../pdf/pdfprovider.dart';
+import '../pdf/pdfview.dart';
 import '../video/models/Videoresponse.dart';
 import '../video/videoveiw.dart';
 import 'content choice.dart';
@@ -13,9 +18,12 @@ class TitlePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-      ),
+      backgroundColor: AppColors.borderColor,
+
+      // appBar: AppBar(
+      //   // title: Text("Content"),
+      //   // backgroundColor: Colors.blue,
+      // ),
       body: FutureBuilder<List<String>>(
         future: ContentChoice.getAllTitles(),
         builder: (context, snapshot) {
@@ -40,7 +48,7 @@ class TitlePage extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 14),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                     color: Colors.white,
                     borderRadius: BorderRadius.circular(18),
                     boxShadow: const [
                       BoxShadow(
@@ -54,15 +62,15 @@ class TitlePage extends StatelessWidget {
                     leading: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
+                        color: AppColors.appBarColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.bookmark),
+                      child: const Icon(Icons.bookmark,color: AppColors.secondaryColor,),
                     ),
                     title: Text(
                       titles[index],
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -79,12 +87,39 @@ class TitlePage extends StatelessWidget {
 
                         context.read<VideoProvider>().setSelectedTitle(title);
 
-                        if (result is Videoresponse) {
+                       if (result is Videoresponse) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => const Videoveiw()),
                           );
                         }
+                       else if (result is Pdfresponse) {
+                          context.read<PdfProvider>().setSelectedTitle(title); // ← دي المهمة
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const PdfView()),
+                          );
+                        }
+                        else{
+                         final vm = context.read<QuestionViewModel>();
+
+                         vm.setSelectedTitle(title);
+                         await vm.loadQuestions();
+
+                         print("Before Navigate");
+
+                         Navigator.push(
+                           context,
+                           MaterialPageRoute(
+                             builder: (_) => const Exercise(),
+                           ),
+                         );
+
+                         print("After Navigate");
+
+                        }
+
+
                       } catch (e) {
                         print("onTap error: $e"); // ← هنا هتشوفي المشكلة
                       }

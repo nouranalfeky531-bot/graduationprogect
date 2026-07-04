@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_progect/core/theme/app_colors.dart';
 
 import 'glossary.dart';
 
@@ -28,11 +29,12 @@ class _GlossaryTabState extends State<GlossaryTab> {
           child: TextField(
             decoration: InputDecoration(
               hintText: "Search term...",
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
+              // hintStyle: TextStyle(color: AppColors.secondaryColor),
+              prefixIcon: const Icon(Icons.search,),
+                enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppColors.appBarColor),
+              borderRadius: BorderRadius.circular(12),
+            ),),
             onChanged: (value) {
               setState(() {
                 searchText = value;

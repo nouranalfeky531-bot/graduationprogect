@@ -4,11 +4,11 @@ import '../video/videoviewmodel.dart';
 import 'models/Pdfresponse.dart';
 
 class PdfViewModel {
-  static const List<String> fileNames =  videoviewModel.fileNames;
-  //   'assets/files/PDFSample.json',
-  //   'assets/files/PDFSample2.json',
-  //   'assets/files/PDFSample3.json',
-  // ];
+  static const List<String> fileNames = [
+    'assets/files/PDFSample.json',
+    'assets/files/PDFSample2.json',
+    'assets/files/PDFSample3.json',
+ ];
 
   static Future<List<String>> getAllTitles() async {
     List<String> titles = [];
