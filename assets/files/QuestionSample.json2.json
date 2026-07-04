@@ -1,0 +1,37 @@
+{
+    "questions": [
+        {
+            "question": "يمكن أن تصنع أسلاك الكهرباء من عنصر عدده الذري",
+            "answers": [
+                {
+                    "text": "7",
+                    "isCorrect": false,
+                    "chosenFeedback": "إجابة غير صحيحة ❌",
+                    "notChosenFeedback": "",
+                    "tip": "فكري في عنصر موصل جيد"
+                },
+                {
+                    "text": "10",
+                    "isCorrect": false,
+                    "chosenFeedback": "إجابة غير صحيحة ❌",
+                    "notChosenFeedback": "",
+                    "tip": ""
+                },
+                {
+                    "text": "13",
+                    "isCorrect": false,
+                    "chosenFeedback": "قريبة لكن مش صح ❌",
+                    "notChosenFeedback": "",
+                    "tip": ""
+                },
+                {
+                    "text": "17",
+                    "isCorrect": true,
+                    "chosenFeedback": "إجابة صحيحة ✅",
+                    "notChosenFeedback": "",
+                    "tip": "ده عنصر موصل جيد"
+                }
+            ]
+        }
+    ]
+}

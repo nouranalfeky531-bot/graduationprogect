@@ -21,13 +21,15 @@ class CustomDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       decoration: InputDecoration(
-
-
-        hintStyle: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        hintStyle: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: Colors.black),
         filled: true,
-        fillColor: AppColors.lightColor,
-hoverColor: Colors.red,
+         fillColor: Colors.transparent,
+         hoverColor: Colors.red,
 
         hintText: hint,
         // labelText: hint,

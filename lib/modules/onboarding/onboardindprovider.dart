@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 class onboardprovider extends ChangeNotifier{
  bool isopened=false ;
   getvalue() async {
-   isopened = await prefsemanager.getprefs();
+   isopened = await PrefsManager. getPrefs();
    notifyListeners();
   }
 

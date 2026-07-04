@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 class VideoPlayerProvider extends ChangeNotifier {
 
   late Player player;
-  late VideoController controller;
+ VideoController? controller;
 
   Duration position = Duration.zero;
   bool isMuted = false;
@@ -30,36 +30,88 @@ class VideoPlayerProvider extends ChangeNotifier {
     player = Player();
     controller = VideoController(player);
 
+    player.stream.playing.listen((event) {
+      print("Is playing: $event");
+    });
+
     final dir = await getApplicationDocumentsDirectory();
     final videoPath = "${dir.path}/${videoUrl.hashCode}.mp4";
     final videoFile = File(videoPath);
 
-    // لو الفيديو متخزن
-    if (await videoFile.exists()) {
-      await player.open(Media(videoPath));
-      Fluttertoast.showToast(msg: "Playing offline video");
-    } else {
-      // شغليه أونلاين فوراً
-      await player.open(Media(videoUrl));
-      Fluttertoast.showToast(msg: "Downloading video...");
-
-      try {
-        await Dio().download(
-          videoUrl,
-          videoPath,
-          onReceiveProgress: (received, total) {
-            if (total != -1) {
-              double progress = (received / total * 100);
-              Fluttertoast.showToast(
-                  msg: "Download: ${progress.toStringAsFixed(0)}%");
-            }
-          },
-        );
-        Fluttertoast.showToast(msg: "Video downloaded successfully");
-      } catch (e) {
-        Fluttertoast.showToast(msg: "Download failed: $e");
+    try {
+      if (await videoFile.exists()) {
+        print("Playing cached video");
+        await Future.delayed(const Duration(milliseconds: 1000));
+        await player.open(Media(videoFile.path));
+        notifyListeners();
+        return;
       }
+      final start = DateTime.now();
+      await player.open(Media(videoUrl));
+      print("Open time: ${DateTime.now().difference(start).inSeconds} sec");
+
+      notifyListeners(); // ← وهنا كمان
+
+      Fluttertoast.showToast(
+        msg: "Loading video...",
+        toastLength: Toast.LENGTH_SHORT,
+      );
+
+      Dio()
+          .download(
+        videoUrl,
+        videoPath,
+        onReceiveProgress: (received, total) {
+          if (total > 0) {
+            print("Download ${(received / total * 100).toStringAsFixed(0)}%");
+          }
+        },
+      )
+          .then((_) {
+        print("Video cached successfully");
+      })
+          .catchError((e) async {
+        print("Cache error: $e");
+        if (await videoFile.exists()) {
+          await videoFile.delete();
+        }
+      });
+
+    } catch (e) {
+      print("Video Error: $e");
+      Fluttertoast.showToast(
+        msg: "Failed to load video",
+        toastLength: Toast.LENGTH_SHORT,
+      );
     }
+
+//     if (await videoFile.exists() && await videoFile.length() > 0)  {
+//       await player.open(Media(videoPath));
+//       Fluttertoast.showToast(msg: "Playing offline video");
+// notifyListeners();
+//     } else {
+//       // شغليه أونلاين فوراً
+//       await player.open(Media(videoUrl));
+//       Fluttertoast.showToast(msg: "Downloading video...");
+//       notifyListeners();
+//
+//       try {
+//         await Dio().download(
+//           videoUrl,
+//           videoPath,
+//           onReceiveProgress: (received, total) {
+//             if (total != -1) {
+//               double progress = (received / total * 100);
+//               Fluttertoast.showToast(
+//                   msg: "Download: ${progress.toStringAsFixed(0)}%");
+//             }
+//           },
+//         );
+//         Fluttertoast.showToast(msg: "Video downloaded successfully");
+//       } catch (e) {
+//         Fluttertoast.showToast(msg: "Download failed: $e");
+//       }
+//     }
 
     // لو في صوت خارجي
     // if (audioUrl != null) {

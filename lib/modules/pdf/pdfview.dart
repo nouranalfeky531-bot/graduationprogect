@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/resources/ap_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../video/widgets/dropdown.dart';
 
 
 class PdfView extends StatefulWidget {
@@ -91,15 +92,15 @@ class _PdfViewState extends State<PdfView> {
           );
 
           return Scaffold(
-            backgroundColor: AppColors.lightColor,
+            backgroundColor: AppColors.borderColor,
             appBar: AppBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: AppColors.borderColor,
               elevation: 0,
               toolbarHeight: 20,
               leading: IconButton(
                 icon: const Icon(
                   Icons.arrow_back_ios,
-                  color: Colors.black,
+                  color:AppColors.secondaryColor,
                   size: 18,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
@@ -214,57 +215,62 @@ class _PdfViewState extends State<PdfView> {
                             children: [
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: CustomDropdown(
-                                    hint: 'data language',
-                                    value: selectedlanguage,
-                                    items: pdfProv.languageCodes,
-                                    onChanged: (value) {
-                                      if (value == null) return;
-                                      for (
-                                        int i = 0;
-                                        i < pdfProv.availableLanguages!.length;
-                                        i++
-                                      ) {
-                                        if (value ==
-                                            pdfProv
-                                                .availableLanguages![i]
-                                                .languageCode) {
-                                          pdfProv.selectData(i);
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Card(
+                                    child: CustomDropdown(
+                                      hint: 'data language',
+                                      value: selectedlanguage,
+                                      items: pdfProv.languageCodes,
+                                      onChanged: (value) {
+                                        if (value == null) return;
+                                        for (
+                                          int i = 0;
+                                          i < pdfProv.availableLanguages!.length;
+                                          i++
+                                        ) {
+                                          if (value ==
+                                              pdfProv
+                                                  .availableLanguages![i]
+                                                  .languageCode) {
+                                            pdfProv.selectData(i);
+                                          }
                                         }
-                                      }
-                                      setState(() {
-                                        selectedlanguage = value;
-                                      });
-                                    },
+                                        setState(() {
+                                          selectedlanguage = value;
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: CustomDropdown(
-                                    hint: 'data format',
-                                    value: selected,
-                                    items: const [
-                                      "summary25",
-                                      "summary50",
-                                      "transcript",
-                                    ],
-                                    onChanged: (value) {
-                                      if (value == null) return;
-                                      pdfProv.selected(value);
-                                      setState(() {
-                                        selected = value;
-                                      });
-                                    },
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Card(
+                                    borderOnForeground: true,
+                                    child: CustomDropdown(
+                                      hint: 'data format',
+                                      value: selected,
+                                      items: const [
+                                        "summary25",
+                                        "summary50",
+                                        "transcript",
+                                      ],
+                                      onChanged: (value) {
+                                        if (value == null) return;
+                                        pdfProv.selected(value);
+                                        setState(() {
+                                          selected = value;
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(13.0),
+                            padding: const EdgeInsets.all(5.0),
                             child: Text(
                               selected == 'transcript'
                                   ? displayText

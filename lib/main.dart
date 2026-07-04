@@ -8,24 +8,30 @@ import 'home.dart';
 import 'modules/cotent/titlepage.dart';
 import 'modules/coursescrean/coursescreen.dart';
 
+import 'modules/exercise/exercise/file/data/questionRepository2.dart';
+import 'modules/exercise/exercise/file/viewmodels/questioonViewModel2.dart';
 import 'modules/lesson/lessonpage.dart';
 import 'modules/onboarding/onboarding_screen.dart';
+import 'modules/pdf/pdfprovider.dart';
 import 'modules/video/videosurvices/titleprovider.dart';
 import 'modules/video/videosurvices/videoprovider.dart';
 
 
 
 
-void main() {
+void main()async  {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized(); //create
+  final onboard = onboardprovider();
+  await onboard.getvalue();
   runApp(
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => VideoProvider()),
-          // باقي الـ providers
-
-      ChangeNotifierProvider(create: (context) =>onboardprovider())],
+          ChangeNotifierProvider(create: (_) => PdfProvider()),
+          ChangeNotifierProvider(create: (_) => onboard),
+          ChangeNotifierProvider(create: (_) => QuestionViewModel(QuestionRepository()),
+          ),],
       // ChangeNotifierProvider(create: (context) =>selectedtitle()
 
   child:  MyApp()),
@@ -51,15 +57,15 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
        home:
        //Videoveiw(),
-        TitlePage(),
+       // TitlePage(),
 
         // TitleDropdown(),
 
       // CoursesScreen(),
        //  HomePage()
-    //        provider.isopened?
-    //  Videoveiw():
-    //   OnboardingScreen(),
+           provider.isopened?
+           CoursesScreen():
+       OnboardingScreen(),
     )
     );
   }

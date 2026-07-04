@@ -146,7 +146,7 @@ class PdfVideoArea extends StatelessWidget {
                     icon: Icon(
                       Icons.subtitles,
                       color: showSubtitle
-                          ? AppColors.primaryColor
+                          ? AppColors.lightColor
                           : Colors.white,
                     ),
                     onPressed: onSubtitlePress,

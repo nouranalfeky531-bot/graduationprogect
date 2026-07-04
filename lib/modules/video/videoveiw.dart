@@ -19,7 +19,7 @@ class Videoveiw extends StatefulWidget {
 
 class _VideoveiwState extends State<Videoveiw> {
   Offset? tapPosition;
-  late VideoProvider videoProvider;
+  // late VideoProvider videoProvider;
   // VideoProvider videoProvider = VideoProvider();
   VideoPlayerProvider playerProvider = VideoPlayerProvider();
 
@@ -28,20 +28,38 @@ class _VideoveiwState extends State<Videoveiw> {
   String? selectedsubtitle = AppConstants.defult_language;
   String? selectedaudio;
   List<AudioTrack> audioTracks = [];
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   videoProvider = context.read<VideoProvider>();
+  //   fetchData();
+  //   print(videoProvider.url);
+  // }
   @override
+
   void initState() {
     super.initState();
-    videoProvider = context.read<VideoProvider>();
-    fetchData();
-    print(videoProvider.url);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final videoProvider =
+      Provider.of<VideoProvider>(context, listen: false);
+
+      await videoProvider.fetchvideodata();
+
+      if (videoProvider.url != null) {
+        playerProvider.initialize(videoProvider.url!);
+      }
+      print("URL after fetch: ${videoProvider.url}");
+    });
+
   }
 
-  void fetchData() async {
-    await videoProvider.fetchvideodata();
-    if (!mounted) return;
-     // await videoviewModel.loadvediodetails(videoProvider.selectedTitle!);
-    playerProvider.initialize(videoProvider.url!);
-  }
+  // void fetchData() async {
+  //   await videoProvider.fetchvideodata();
+  //   if (!mounted) return;
+  //    // await videoviewModel.loadvediodetails(videoProvider.selectedTitle!);
+  //   playerProvider.initialize(videoProvider.url!);
+  // }
 
   @override
   void dispose() {
@@ -51,30 +69,33 @@ class _VideoveiwState extends State<Videoveiw> {
 
   @override
   Widget build(BuildContext context) {
-    print(AppConstants.defult_language);
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: videoProvider),
-        ChangeNotifierProvider.value(value: playerProvider),
-      ],
-      child: Consumer<VideoProvider>(builder: (context, videoProvider, child) {
-        if (videoProvider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return Scaffold(
-          backgroundColor: AppColors.lightColor,
-          appBar: AppBar(),
+    return ChangeNotifierProvider.value(
+      value: playerProvider, // بس ده
+      child: Consumer<VideoProvider>(
+          builder: (context, videoProvider, _) {
+            if (videoProvider.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+       return Scaffold(
+           backgroundColor: AppColors.borderColor,
+          appBar: AppBar(
+            backgroundColor: AppColors.borderColor,
+          ),
           body: SingleChildScrollView(
             child: Column(
               children: [
                 Consumer<VideoPlayerProvider>(
                     builder: (context, playerProvider, child) {
+                      print("Controller: ${playerProvider.controller}");
                       return AspectRatio(
                         aspectRatio: 16 / 10,
                         child: Stack(
                           alignment: Alignment.topCenter,
                           children: [
-                            Video(controller: playerProvider.controller),
+                            if (playerProvider.controller != null)
+                              Video(controller: playerProvider.controller!)
+                            else
+                              Center(child: CircularProgressIndicator()),
                             Row(children: [
                               VideoControlButton(
                                 icon: playerProvider.isMuted
@@ -119,15 +140,23 @@ class _VideoveiwState extends State<Videoveiw> {
                                         ),
                                         Offset.zero & overlay.size,
                                       ),
-                                      items: videoProvider.audiolanguageCodes!
-                                          .map(
-                                            (e) => PopupMenuItem<String>(
-                                          value: e,
-                                          child: Text(e),
-                                        ),
-                                      )
-                                          .toList(),
-                                    );
+                                    //   items: videoProvider.audiolanguageCodes??[]
+                                    //       .map(
+                                    //         (e) => PopupMenuItem<String>(
+                                    //       value: e,
+                                    //       child: Text(e),
+                                    //     ),
+                                    //   )
+                                    //       .toList(),
+                                    // );
+                                    items: (videoProvider.audiolanguageCodes ?? [])
+                                        .map(
+                                          (e) => PopupMenuItem<String>(
+                                        value: e,
+                                        child: Text(e),
+                                      ),
+                                    )
+                                        .toList(),);
 
                                     if (result != null) {
                                       setState(() {
@@ -135,8 +164,8 @@ class _VideoveiwState extends State<Videoveiw> {
                                       });
 
                                       for (int i = 0;
-                                      i < videoProvider.audioList!.length;
-                                      i++) {
+                                      i < (videoProvider.audioList?.length ?? 0);
+                                      i++){
                                         if (selectedaudio ==
                                             videoProvider.audioList![i].langCode) {
                                           await playerProvider.player.setAudioTrack(
@@ -191,7 +220,7 @@ class _VideoveiwState extends State<Videoveiw> {
                                         ),
                                         Offset.zero & overlay.size,
                                       ),
-                                      items: videoProvider.subtitlelangcode!
+                                      items:(videoProvider.subtitlelangcode??[])
                                           .map(
                                             (e) => PopupMenuItem<String>(
                                           value: e,
@@ -206,7 +235,7 @@ class _VideoveiwState extends State<Videoveiw> {
                                         selectedsubtitle = result;
                                       });
 
-                                      for (var vtt in videoProvider.vttList!) {
+          for (var vtt in (videoProvider.vttList ?? []))  {
                                         if (result == vtt.langCode) {
                                           playerProvider.player.setSubtitleTrack(
                                             SubtitleTrack.uri(vtt.url!),
@@ -219,51 +248,178 @@ class _VideoveiwState extends State<Videoveiw> {
                                 ),
                               ),
                               IconButton(
-                                  icon: Icon(
-                                    Icons.key,
-                                    color: AppColors.lightColor,
-                                    size: 25,
-                                  ),
-                                  onPressed: () => showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return Expanded(
-                                          child: Dialog(
-                                            backgroundColor: AppColors.lightColor,
-                                            child: SingleChildScrollView(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                                children: videoProvider.keywords!
-                                                    .map(
-                                                      (e) => Padding(
-                                                    padding:
-                                                    const EdgeInsets.all(
-                                                        8.0),
-                                                    child: Column(
-                                                      children: [
-                                                        Text(
-                                                          e ?? '',
-                                                          style: TextStyle(
-                                                              color: AppColors
-                                                                  .darkColor,
-                                                              fontSize: 20),
-                                                        ),
-                                                        Divider(
-                                                          height: 3,
-                                                        )
-                                                      ],
+                                icon: Icon(
+                                  Icons.key,
+                                  color: AppColors.lightColor,
+                                  size: 25,
+                                ),
+                                onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    // الليست الـ hardcoded
+                                    final List<Map<String, String>> keywords = [
+                                      {
+                                        'term': 'excretion',
+                                        'definition':
+                                        'Excretion is the process by which metabolic waste is eliminated from an organism.',
+                                      },
+                                      {
+                                        'term': 'respiratory system',
+                                        'definition':
+                                        'The respiratory system (also respiratory apparatus, ventilatory system) is a biological system consisting of specific organs and structures used for gas exchange in animals and plants. The anatomy and physiology that make this happen varies greatly, depending on the size of the organism, the environment in which it lives and its evolutionary history.',
+                                      },
+                                      {
+                                        'term': 'alveoli',
+                                        'definition':
+                                        'Alveoli are tiny air sacs in the lungs where the exchange of oxygen and carbon dioxide takes place between the air and the blood.',
+                                      },
+                                      {
+                                        'term': 'bronchiole',
+                                        'definition':
+                                        'A bronchiole is one of the smallest airways in the respiratory tract, connecting the bronchi to the alveoli.',
+                                      },
+                                    ];
+
+                                    return Dialog(
+                                      backgroundColor: AppColors.lightColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      insetPadding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 60,
+                                      ),
+                                      child: ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxHeight: MediaQuery.of(context).size.height * 0.7,
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(12.0),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    'Glossary',
+                                                    style: TextStyle(
+                                                      color: AppColors.darkColor,
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
-                                                )
-                                                    .toList(),
+                                                  IconButton(
+                                                    icon: Icon(Icons.close, color: AppColors.darkColor),
+                                                    onPressed: () => Navigator.pop(context),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          ),
-                                        );
-                                      })),
+                                            Divider(height: 1, color: AppColors.darkColor.withOpacity(0.2)),
+                                            Flexible(
+                                              child: SingleChildScrollView(
+                                                child: Theme(
+                                                  data: Theme.of(context).copyWith(
+                                                    dividerColor: Colors.transparent,
+                                                  ),
+                                                  child: Column(
+                                                    children:(videoProvider.keywords??[])
+                                                        .map(
+                                                          (e) => Column(
+                                                        children: [
+                                                          ExpansionTile(
+                                                            iconColor: AppColors.darkColor,
+                                                            collapsedIconColor: AppColors.darkColor,
+                                                            title: Text(
+                                                              e ?? '',
+                                                              style: TextStyle(
+                                                                color: AppColors.darkColor,
+                                                                fontSize: 20,
+                                                                fontWeight: FontWeight.bold,
+                                                              ),
+                                                            ),
+                                                            childrenPadding: const EdgeInsets.fromLTRB(
+                                                                16, 0, 16, 16),
+                                                            expandedAlignment: Alignment.centerLeft,
+                                                            children: [
+                                                              Align(
+                                                                alignment: Alignment.centerLeft,
+                                                                child: Text(
+                                                               "We use VSEPR notation to predict molecular shapes",
+                                                                  style: TextStyle(
+                                                                    color: AppColors.darkColor,
+                                                                    fontSize: 16,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          Divider(
+                                                            height: 1,
+                                                            color: AppColors.darkColor.withOpacity(0.15),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
+                                                        .toList(),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                              // IconButton(
+                              //     icon: Icon(
+                              //       Icons.key,
+                              //       color: AppColors.lightColor,
+                              //       size: 25,
+                              //     ),
+                              //     onPressed: () => showDialog(
+                              //         context: context,
+                              //         builder: (BuildContext context) {
+                              //           return Expanded(
+                              //             child: Dialog(
+                              //               backgroundColor: AppColors.lightColor,
+                              //               child: SingleChildScrollView(
+                              //                 child: Column(
+                              //                   mainAxisAlignment:
+                              //                   MainAxisAlignment.end,
+                              //                   crossAxisAlignment:
+                              //                   CrossAxisAlignment.end,
+                              //                   children:  (videoProvider.keywords ?? [])
+                              //                       .map(
+                              //                         (e) => Padding(
+                              //                       padding:
+                              //                       const EdgeInsets.all(
+                              //                           8.0),
+                              //                       child: Column(
+                              //                         children: [
+                              //                           Text(
+                              //                             e ?? '',
+                              //                             style: TextStyle(
+                              //                                 color: AppColors
+                              //                                     .darkColor,
+                              //                                 fontSize: 20),
+                              //                           ),
+                              //                           Divider(
+                              //                             height: 3,
+                              //                           )
+                              //                         ],
+                              //                       ),
+                              //                     ),
+                              //                   )
+                              //                       .toList(),
+                              //                 ),
+                              //               ),
+                              //             ),
+                              //           );
+                              //         })),
                             ]),
                           ],
                         ),
@@ -278,46 +434,54 @@ class _VideoveiwState extends State<Videoveiw> {
                         // SizedBox(width: 39,),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CustomDropdown(
-                              hint: 'data language',
-                              value: videoProvider.selectedLanguage,
-                              items: videoProvider.languageCodes,
-                              onChanged: (value) {
-                                if (value != null) {
-                                  videoProvider.changeLanguage(value);
-                                }
-                              },
+                            padding: const EdgeInsets.all(6.0),
+                            child: Card(
+                              child: CustomDropdown(
+                                hint: 'data language',
+                                value: videoProvider.selectedLanguage,
+                                items: videoProvider.languageCodes,
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    videoProvider.changeLanguage(value);
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CustomDropdown(
-                              hint: 'data format',
-                              value: selected,
-                              items: const [
-                                "summary25",
-                                "summary50",
-                                "transcript"
-                              ],
-                              onChanged: (value) {
-                                videoProvider.selected(value!);
-                                setState(() {
-                                  selected = value!;
-                                });
-                              },
+                            padding: const EdgeInsets.all(6.0),
+                            child: Card(
+                              child: CustomDropdown(
+                                hint: 'data format',
+                                value: selected,
+                                items: const [
+                                  "summary25",
+                                  "summary50",
+                                  "transcript"
+                                ],
+                                onChanged: (value) {
+                                  videoProvider.selected(value!);
+                                  setState(() {
+                                    selected = value!;
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(13.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
                           videoProvider.selectedvalue ??
-                              videoProvider.defultseletedvalue()!,
+                              videoProvider.defultseletedvalue() ??
+                              '',
+
+                          // videoProvider.selectedvalue ??
+                          //     videoProvider.defultseletedvalue()!,
                           style: TextStyle(
                               color: AppColors.darkColor,
                               fontWeight: FontWeight.bold)),

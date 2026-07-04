@@ -26,7 +26,7 @@ class CustomBtn extends StatelessWidget {
               ? Center(
                   child: Text(
                     text,
-                    style: const TextStyle(fontSize: 24),
+                    style:  TextStyle(fontSize: 24,color: AppColors.lightColor),
                   ),
                 )
               : Text(

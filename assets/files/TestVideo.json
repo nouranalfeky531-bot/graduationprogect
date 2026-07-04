@@ -1,0 +1,39 @@
+{
+  "keywords": [
+    "test video",
+    "sample"
+  ],
+  "input": "visual",
+  "status": "preprocessed",
+  "type": "mo",
+  "speakerGender": "male",
+  "_id": "test_video_001",
+  "audioList": [],
+  "vttList": [],
+  "availableLanguages": [
+    {
+      "data": {
+        "transcript": "This is a test video transcript.",
+        "summary25": "This is a test summary 25.",
+        "summary50": "This is a test summary 50.",
+        "keywords": []
+      },
+      "frameUrls": [],
+      "frameList": [],
+      "languageCode": "en",
+      "isEdited": false
+    }
+  ],
+  "tenantId": "azharengineering2020",
+  "ownershipId": "azharengineering2020_ut1",
+  "title": "Test Video",
+  "language": "en",
+  "url": "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
+  "domainId": "test_domain",
+  "contentType": "video/mp4",
+  "narration": [],
+  "owner": "public",
+  "domainName": "Test Domain",
+  "subDomainId": "test_subdomain",
+  "subDomainName": "Test Sub Domain"
+}

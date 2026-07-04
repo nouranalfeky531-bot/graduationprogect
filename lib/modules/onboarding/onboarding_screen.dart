@@ -4,18 +4,12 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:graduation_progect/modules/onboarding/prefsmanager.dart';
-import 'package:graduation_progect/modules/video/videoveiw.dart';
-import 'package:provider/provider.dart';
-// import "package:flutter_gen/gen_l10n/app_localizations.dart";
 import '../../../core/theme/app_colors.dart';
 import '../../core/resources/ap_constants.dart';
 import '../../core/widgets/custom_btn.dart';
-import '../../core/widgets/custom_btn.dart';
-
-
+import '../coursescrean/coursescreen.dart';
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen();
-
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
@@ -35,16 +29,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Hero(
-                    tag: "logo",
-                    child: Image.asset(
-                      "assets/images/app_logo.png",
-                      width: 50,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
+                  // Hero(
+                  //   tag: "logo",
+                  //   child: Image.asset(
+                  //     "assets/images/app_logo.png",
+                  //     width: 50,
+                  //   ),
+                  // ),
+                  // const SizedBox(
+                  //   width: 8,
+                  // ),
                   Hero(
                     tag: "appName",
                     child: Material(
@@ -81,9 +75,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(
                 height: 12,
               ),
+
               Text(
-                "Choose your preferred theme and language to get started with a comfortable, tailored experience that suits your style.",
-                style: theme.textTheme.bodyMedium,
+                "Your study materials, always with you.\n"
+                "Choose your preferred language to get started with a comfortable, tailored experience that suits your style.",
+                style:TextStyle( fontSize: 18),
               ),
               Expanded(
                 child: Row(
@@ -123,10 +119,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const Spacer(),
               Center(
                   child: CustomBtn(
-                onTap: () {
-                  prefsemanager.setprefs(true);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Videoveiw(),));
-                },
+                    onTap: () async {
+                      await PrefsManager.setPrefs(true);
+                      if (!context.mounted) return;
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => CoursesScreen()),
+                      );
+                    },
                 text: "Let’s Start",
                 isLoading: false,
                 isExpanded: true,
